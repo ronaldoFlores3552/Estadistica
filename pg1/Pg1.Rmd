@@ -1,16 +1,22 @@
 ---
-title: "Entrega PG 1 - Gestor de Motor de busqueda para Ropa de mode de la India"
+title: "Entrega PG 1 - Gestor de Motor de busqueda para elaborar recomendaciones sobre las preferencias de la Ropa de moda de la India"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 subtitle: "Grupo 3"
 output:
   html_document:
     toc: true
+    toc_depth: 5
+    df_print: paged
     toc_float:
       collapsed: no
       smooth_scroll: yes
     number_sections: true
     theme: yeti
 ---
+```{r configuracion, include=FALSE}
+# knitr::opts_chunk$set(echo = FALSE, message = FALSE, results = "hide")
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 <center>![][link1]</center>
 
@@ -24,14 +30,25 @@ output:
 |*Hilario Quintana, Jeffry*| **202020082** |jeffry.hilario@utec.edu.pe|
 
 > # **Introducción**
+
+La industria de la moda en la India ha experimentado un crecimiento significativo en los últimos años, impulsado por la creciente demanda de los consumidores y el aumento de la producción local. Sin embargo, los gustos y preferencias de los consumidores en cuanto a la ropa de moda pueden variar ampliamente, lo que presenta un desafío para las empresas del sector al momento de ofrecer productos que se adapten a las necesidades y deseos de sus clientes.
+
 > ## *Relevancia y Justificación:*
 
+En este contexto, la aplicación de técnicas de análisis de datos y aprendizaje automático puede resultar de gran utilidad para entender mejor las preferencias de los consumidores y mejorar la capacidad de las empresas para ofrecer productos más acordes a sus gustos y necesidades. En particular, la utilización de un gestor de motor de búsqueda puede ser una herramienta eficaz para recopilar y analizar grandes cantidades de datos sobre las preferencias de la ropa de moda en la India.
+
+En este contexto, el desarrollo de un gestor de motor de búsqueda para la elaboración de recomendaciones sobre las preferencias de la ropa de moda en la India se vuelve crucial para mejorar la capacidad de las empresas de este sector para ofrecer productos más acordes a las necesidades y gustos de los consumidores. Además, este tipo de herramientas tecnológicas permiten recopilar grandes cantidades de datos sobre las preferencias de los consumidores de manera eficiente, lo que es vital para mejorar la eficacia y eficiencia de la toma de decisiones empresariales.
+
 > # **Objetivos:**
+
 > ## *Objetivo Principal:*
+
+Nuestro objetivo de este trabajo es presentar un gestor de motor de búsqueda para elaborar recomendaciones sobre las preferencias de la ropa de moda en la India. Para ello, se analizará una base de datos que incluye información sobre los gustos y preferencias de los consumidores en cuanto a diferentes tipos de prendas y estilos de moda. 
 
 > ## Objetivos Secundarios
 
-
+* A partir de esta información, se desarrollará un modelo de recomendación que permita a las empresas del sector ofrecer productos más acordes a las necesidades y gustos de los consumidores, contribuyendo así a mejorar su competitividad y su capacidad de satisfacer las demandas del mercado.
 
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
+
