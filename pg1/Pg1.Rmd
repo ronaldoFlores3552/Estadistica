@@ -15,14 +15,14 @@ output:
 ---
 ```{r configuracion, include=FALSE}
 # knitr::opts_chunk$set(echo = FALSE, message = FALSE, results = "hide")
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,message = FALSE)
 ```
 
 <center>![][link1]</center>
 
-> ## Integrantes 
-**Apellido, Nombre**|**Código**|**Correo Electronico**|
-:--------------------:|:----------:|:---------------------:|
+> # Integrantes 
+|**Apellido, Nombre**|**Código**|**Correo Electronico**|
+|:------------------:|:--------:|:--------------------:|
 |*Alvarado Vargas, Fabian*| **201910354** |fabian.alvarado@utec.edu.pe|
 |*Murga Díaz, Nathalie*| **202110238** |nathalie.murga@utec.edu.pe|
 |*Flores Soto, Ronaldo Dylan*| **202110122** |ronaldo.flores@iutec.edu.pe|
@@ -31,24 +31,101 @@ knitr::opts_chunk$set(echo = TRUE)
 
 > # **Introducción**
 
-La industria de la moda en la India ha experimentado un crecimiento significativo en los últimos años, impulsado por la creciente demanda de los consumidores y el aumento de la producción local. Sin embargo, los gustos y preferencias de los consumidores en cuanto a la ropa de moda pueden variar ampliamente, lo que presenta un desafío para las empresas del sector al momento de ofrecer productos que se adapten a las necesidades y deseos de sus clientes.
+La moda es una industria global en constante evolución y uno de los mayores impulsores del comercio internacional. Los consumidores buscan constantemente nuevas tendencias y estilos únicos, lo que hace que la industria de la moda sea altamente competitiva. Para ayudar a los minoristas a mantenerse al día con las últimas tendencias y preferencias de los consumidores, se están desarrollando nuevas herramientas de análisis de datos y motores de búsqueda para la moda.
 
-> ## *Relevancia y Justificación:*
-
-En este contexto, la aplicación de técnicas de análisis de datos y aprendizaje automático puede resultar de gran utilidad para entender mejor las preferencias de los consumidores y mejorar la capacidad de las empresas para ofrecer productos más acordes a sus gustos y necesidades. En particular, la utilización de un gestor de motor de búsqueda puede ser una herramienta eficaz para recopilar y analizar grandes cantidades de datos sobre las preferencias de la ropa de moda en la India.
+> ### *Relevancia y Justificación:*
 
 En este contexto, el desarrollo de un gestor de motor de búsqueda para la elaboración de recomendaciones sobre las preferencias de la ropa de moda en la India se vuelve crucial para mejorar la capacidad de las empresas de este sector para ofrecer productos más acordes a las necesidades y gustos de los consumidores. Además, este tipo de herramientas tecnológicas permiten recopilar grandes cantidades de datos sobre las preferencias de los consumidores de manera eficiente, lo que es vital para mejorar la eficacia y eficiencia de la toma de decisiones empresariales.
 
 > # **Objetivos:**
+> ### **Objetivo Principal:**
 
-> ## *Objetivo Principal:*
+Nuestro objetivo de este trabajo es presentar un gestor de motor de búsqueda para elaborar recomendaciones sobre las preferencias de la ropa de moda en la India. Para ello, se analizará una base de datos que incluye información sobre los gustos y preferencias de los consumidores en cuanto a diferentes tipos de prendas y estilos de moda.
 
-Nuestro objetivo de este trabajo es presentar un gestor de motor de búsqueda para elaborar recomendaciones sobre las preferencias de la ropa de moda en la India. Para ello, se analizará una base de datos que incluye información sobre los gustos y preferencias de los consumidores en cuanto a diferentes tipos de prendas y estilos de moda. 
+> ### *Objetivos Secundarios*
 
-> ## Objetivos Secundarios
+A partir de esta información, se desarrollará un modelo de recomendación que permita a las empresas del sector ofrecer productos más acordes a las necesidades y gustos de los consumidores, contribuyendo así a mejorar su competitividad y su capacidad de satisfacer las demandas del mercado.
 
-* A partir de esta información, se desarrollará un modelo de recomendación que permita a las empresas del sector ofrecer productos más acordes a las necesidades y gustos de los consumidores, contribuyendo así a mejorar su competitividad y su capacidad de satisfacer las demandas del mercado.
++ Identificar los productos más caros para cada categoría
++ Crear un motor de recomendaciones basado en contenido
++ Identificar los colores más comunes que llevan el aumento de precio
++ Analizar qué productos en el mercado de la India son más caros y para qué género
++ Identificar los colores preferidos de la población con relación a su género
+
+> # Datos
+> ### Recolección de datos
+
+Se ha seleccionado la data de una base de datos de Kaggle con el nombre [“Fashion Clothing Products Dataset”](BaseDatos) el cual presenta una población de 10000 valores. La base de datos se origina en Myntra.com, Myntra es una importante empresa india de comercio electrónico de moda con sede en Bengaluru, Karnataka, India. La empresa se fundó en 2007 para vender artículos de regalo personalizados. En mayo de 2014 , FlipKart adquirió Myntra.com.
+
+Empezaremos cargando nuestra base de datos
+```{r}
+library(readr)
+dataframe<-read_csv("myntra_products_catalog.csv")
+dataframe
+```
+
+> ### Población Objetivo
+
+Seleccionaremos una muestra de 1000 variables para poder cumplir nuestros objetivos y poder responder de manera adecuada cada pregunta usando los análisis y limpieza de los datos que hemos aprendido a lo largo de este curso.
+
+A continuación seleccionaremos nuestra muestra
+```{r}
+dataMuestra<-dataframe[1:1000,]
+dataMuestra
+```
+y continuaremos con nuestro estudio en base a esta
+
+> # Variables de estudio iniciales
+
+Para la base de datos presentamos las siguientes variables:
+
+|**Nombre de variable**| **Tipo de variable** | **Descripción**|
+|:--------------------:|:--------------------:|:--------------:|
+|**ProductoId**|***cualitativa***|Es nuestra llave primaria para cada producto, única en toda la base de datos|
+|**NombreProducto**|***cualitativa***|El nombre del producto |
+|**MarcaProducto**|***cualitativa***|La marca que fabrica el producto|
+|**Género**|***cualitativa***|El género el cual esta destinado para el producto|
+|**PrecioUSD**|***cuantitativa***|El precio en Rupias(INR) convertido a dolares estadounidenses(USD)|
+|**NumImagenes**|***cuantitativa***|Cantidad de imágenes que hay para el producto|
+|**Descripción**|***cualitativa***|Una pequeña descripción sobre el producto|
+|**ColorPrimario**|***cualitativa***|Color del producto|
+
+Actualizamos el nombre de nuestras columnas para una mejor visualización de nuestro estudio
+```{r}
+colnames(dataMuestra)
+colnames(dataMuestra)<-c("ProductoId","NombreProducto","MarcaProducto","Genero","PrecioUSD","NumImagenes","Descripción","ColorPrimario")
+```
+Ahora nuestras columnas se llamaran
+```{r}
+colnames(dataMuestra)
+```
+
+Control de los Na en las variables
+```{r}
+any(is.na(dataMuestra$ProductoId))
+any(is.na(dataMuestra$NombreProducto))
+any(is.na(dataMuestra$MarcaProducto))
+any(is.na(dataMuestra$Genero))
+any(is.na(dataMuestra$PrecioUSD))
+any(is.na(dataMuestra$NumImagenes))
+any(is.na(dataMuestra$Descripción))
+any(is.na(dataMuestra$ColorPrimario))
+```
+
+Detectamos que color primario cuenta con valores Na entonces procedemos a corregirlo
+```{r}
+dataMuestra$ColorPrimario[is.na(dataMuestra$ColorPrimario)]<-"No color"
+any(is.na(dataMuestra$ColorPrimario))
+```
+
+Convertimos la rupia del Precio del producto a dolares estadounidenses
+```{r}
+dataMuestra$PrecioUSD<-dataMuestra$PrecioUSD*0.012
+dataMuestra$PrecioUSD[1:10]
+```
 
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
+[BaseDatos]: https://www.kaggle.com/datasets/shivamb/fashion-clothing-products-catalog
 
+  
