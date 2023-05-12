@@ -123,6 +123,105 @@ Convertimos la rupia del Precio del producto a dolares estadounidenses
 dataMuestra$PrecioUSD<-dataMuestra$PrecioUSD*0.012
 dataMuestra$PrecioUSD[1:10]
 ```
+La moda de los productos.
+```{r}
+getmode <- function(mod) {
+   uniqv <- unique(mod)
+   uniqv[which.max(tabulate(match(mod, uniqv)))]
+}
+
+mod <- dataMuestra$NombreProducto
+
+result <- getmode(mod)
+print(result)
+```
+
+La moda de la marca del producto
+```{r}
+getmode <- function(mod) {
+   uniqv <- unique(mod)
+   uniqv[which.max(tabulate(match(mod, uniqv)))]
+}
+
+mod <- dataMuestra$MarcaProducto
+
+result <- getmode(mod)
+print(result)
+```
+
+La moda del género
+```{r}
+getmode <- function(mod) {
+   uniqv <- unique(mod)
+   uniqv[which.max(tabulate(match(mod, uniqv)))]
+}
+
+mod <- dataMuestra$Genero
+
+result <- getmode(mod)
+print(result)
+```
+
+La media de precios de la empresa en USD
+```{r}
+mean(dataMuestra$PrecioUSD)
+```
+
+La mediana de precios de la empresa en USD
+```{r}
+median(dataMuestra$PrecioUSD)
+```
+
+La moda de precios de la empresa en USD
+```{r}
+getmode <- function(mod) {
+   uniqv <- unique(mod)
+   uniqv[which.max(tabulate(match(mod, uniqv)))]
+}
+
+mod <- dataMuestra$PrecioUSD
+
+result <- getmode(mod)
+print(result)
+```
+El rango de los precios
+```{r}
+range(dataMuestra$PrecioUSD)
+```
+El rango intercuartil de precios
+```{r}
+IQR(dataMuestra$PrecioUSD)
+```
+
+La desviacion estandar
+```{r}
+sd(dataMuestra$PrecioUSD)
+```
+La varianza del precio
+```{r}
+var(dataMuestra$PrecioUSD)
+```
+El coeficiente de variacion del precio
+```{r}
+coef_var <- function(cv, na.rm = TRUE) {
+  sd(cv, na.rm=na.rm) / mean(cv, na.rm=na.rm)
+}
+cv <- dataMuestra$PrecioUSD
+print(coef_var(cv))
+```
+
+La moda de las imagenes
+```{r}
+getmode <- function(mod) {
+   uniqv <- unique(mod)
+   uniqv[which.max(tabulate(match(mod, uniqv)))]
+}
+
+mod <- dataMuestra$NumImagenes
+
+result <- getmode(mod)
+print(result)
+```
 
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
