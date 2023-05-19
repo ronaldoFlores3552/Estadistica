@@ -187,15 +187,21 @@ print(result)
 El rango de los precios
 ```{r}
 range(dataMuestra$PrecioUSD)
+plot(dataMuestra$PrecioUSD,main="Rango de los precios",xlab="cantPrecios",ylab="Precios",col="red")
 ```
 El rango intercuartil de precios
 ```{r}
+Q1=quantile(dataMuestra$PrecioUSD,0.25)#Q1
+Q3=quantile(dataMuestra$PrecioUSD,0.75)#Q1
+Q3-Q1
+#segunda forma
 IQR(dataMuestra$PrecioUSD)
+boxplot(dataMuestra$PrecioUSD,col=c('yellow'),horizontal = T,main="Rango de precios USD")
 ```
 
 La desviacion estandar
 ```{r}
-sd(dataMuestra$PrecioUSD)
+sd(dataMuestra$PrecioUSD)#cuanto se dispersa el precio con respecto al promedio
 ```
 La varianza del precio
 ```{r}
@@ -221,6 +227,8 @@ mod <- dataMuestra$NumImagenes
 
 result <- getmode(mod)
 print(result)
+
+boxplot(dataMuestra$NumImagenes,horizontal = T,col="skyblue",main="Numero de Img")
 ```
 
 
