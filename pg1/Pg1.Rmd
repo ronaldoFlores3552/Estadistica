@@ -18,6 +18,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE,message = FALSE)
 ```
 
+
+
 <center>![][link1]</center>
 
 > # Integrantes 
@@ -302,6 +304,44 @@ if (TotalDamas>TotalVarones){
 }
 ```
 
+Comparativa de la cantidad de ropa en base al género
+
+```{r}
+table(dataMuestra$Genero, useNA = "always")
+
+frec_gen<- c(63, 43, 373, 148, 373)
+frec_gen
+
+pie3D(frec_gen, labels=frec_gen, col= c("lightyellow", "lightblue","pink","orange", "green"))
+legend("bottomleft", legend = c("Boys", "Girls", "Men", "Unisex", "Women"),
+       fill =  c("lightyellow", "lightblue", "pink","orange", "green"))
+```
+
+
+
+El rango de los precios según el genero de la ropa
+```{r}
+ggplot(data = dataMuestra, aes(x = dataMuestra$Genero, y = dataMuestra$PrecioUSD, fill = dataMuestra$Genero)) +
+  geom_boxplot() +
+  labs(title = "Relación entre el Precio y el Género de la Ropa",
+       x = "Género",
+       y = "Precio",
+       fill = "Género") +
+  theme_minimal()
+```
+
+La cantidad de ropa Unisex que saca cada marca
+```{r}
+dataHombres <- dataMuestra %>% filter(Genero == "Unisex")
+ggplot(data = dataHombres, aes(x = dataHombres$MarcaProducto, fill = dataHombres$Genero)) +
+  geom_bar(position="dodge") +
+  labs(title = "Relación entre la Marca y el Género de la Ropa",
+       x = "Marca",
+       y = "Conteo",
+       fill = "Género") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90)) 
+```
 
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
