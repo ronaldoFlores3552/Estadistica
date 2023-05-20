@@ -46,9 +46,8 @@ Nuestro objetivo de este trabajo es presentar un gestor de motor de búsqueda pa
 
 A partir de esta información, se desarrollará un modelo de recomendación que permita a las empresas del sector ofrecer productos más acordes a las necesidades y gustos de los consumidores, contribuyendo así a mejorar su competitividad y su capacidad de satisfacer las demandas del mercado.
 
-+ Identificar los productos más caros para cada categoría
-+ Crear un motor de recomendaciones basado en contenido
-+ Identificar los colores más comunes que llevan el aumento de precio
++ Identificar los productos más caros
++ Identificar los colores más repetidos que llevan el aumento de precio
 + Analizar qué productos en el mercado de la India son más caros y para qué género
 + Identificar los colores preferidos de la población con relación a su género
 
@@ -60,6 +59,9 @@ Se ha seleccionado la data de una base de datos de Kaggle con el nombre [“Fash
 Empezaremos cargando nuestra base de datos
 ```{r}
 library(readr)
+library(dplyr)
+library(modeest)
+library(ggplot2)
 dataframe<-read_csv("myntra_products_catalog.csv")
 dataframe
 ```
@@ -169,7 +171,8 @@ mean(dataMuestra$PrecioUSD)
 
 La mediana de precios de la empresa en USD
 ```{r}
-median(dataMuestra$PrecioUSD)
+MedianaPrecio<-median(dataMuestra$PrecioUSD)
+MedianaPrecio
 ```
 
 La moda de precios de la empresa en USD
@@ -178,11 +181,13 @@ getmode <- function(mod) {
    uniqv <- unique(mod)
    uniqv[which.max(tabulate(match(mod, uniqv)))]
 }
-
 mod <- dataMuestra$PrecioUSD
-
 result <- getmode(mod)
 print(result)
+
+cantResult=max(table(mod))
+barplot(table(mod),col=ifelse(table(mod)==cantResult,"red","yellow"))
+
 ```
 El rango de los precios
 ```{r}
@@ -207,7 +212,7 @@ La varianza del precio
 ```{r}
 var(dataMuestra$PrecioUSD)
 ```
-El coeficiente de variacion del precio
+El coeficiente de variación del precio
 ```{r}
 coef_var <- function(cv, na.rm = TRUE) {
   sd(cv, na.rm=na.rm) / mean(cv, na.rm=na.rm)
@@ -230,6 +235,73 @@ print(result)
 
 boxplot(dataMuestra$NumImagenes,horizontal = T,col="skyblue",main="Numero de Img")
 ```
+Identificar el producto más caro
+```{r}
+max(dataMuestra$PrecioUSD)
+productoCaro<-dataMuestra%>%
+  filter(dataMuestra$PrecioUSD==max(dataMuestra$PrecioUSD))
+productoCaro
+```
+Identificar los colores más repetidos que llevan el aumento de precio
+```{r}
+Modcolor<-getmode(dataMuestra$ColorPrimario)
+preguntaColor<-dataMuestra %>%
+  filter(dataMuestra$ColorPrimario==Modcolor)
+ModPrecioColor<-getmode(preguntaColor$PrecioUSD)
+ModPrecioColor
+cantResultColor<-max(table(preguntaColor$PrecioUSD))
+x <- c(1, 5, 1, 6, 2, 1, 6, 7, 1,8,9,10,11,12,13)
+barplot(table(preguntaColor$PrecioUSD), col= ifelse(table(preguntaColor$PrecioUSD)==cantResultColor,"red","green"))
+```
+
+Cuales son los precios más caros para los Varones
+```{r}
+table(dataMuestra$Genero) 
+preguntaBoys<- dataMuestra %>%
+  filter(dataMuestra$Genero=='Boys')
+
+MaxBoys=max(preguntaBoys$PrecioUSD)
+print('Precio maximo para Boys:')
+print(MaxBoys)
+
+preguntaMen<- dataMuestra %>%
+  filter(dataMuestra$Genero=='Men')
+MaxMens=max(preguntaMen$PrecioUSD)
+print('Precio maximo para Men:')
+print(MaxMens)
+
+TotalVarones=MaxBoys+MaxMens
+print('Precio total:')
+print(TotalVarones)
+```
+Cuales son los precios más caros para las Damas
+```{r}
+table(dataMuestra$Genero) 
+preguntaGirls<- dataMuestra %>%
+  filter(dataMuestra$Genero=='Girls')
+MaxGirls=max(preguntaGirls$PrecioUSD)
+print('Precio maximo para Girls:')
+print(MaxGirls)
+
+preguntaWomen<- dataMuestra %>%
+  filter(dataMuestra$Genero=='Women')
+MaxWomen=max(preguntaWomen$PrecioUSD)
+print('Precio maximo para Women: ')
+print(MaxWomen)
+TotalDamas=MaxGirls+MaxWomen
+print('Precio total: ')
+print(TotalDamas)
+```
+```{r}
+if (TotalDamas>TotalVarones){
+  print("Las Damas tienen precio más caro con una diferencia de ")
+  print(TotalDamas-TotalVarones)
+}else{
+  print("Los Varones tienen precio más caro con una diferencia de ")
+  print(TotalVarones-TotalDamas)
+}
+```
+
 
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
