@@ -64,6 +64,8 @@ library(readr)
 library(dplyr)
 library(modeest)
 library(ggplot2)
+library(plotrix)
+
 dataframe<-read_csv("myntra_products_catalog.csv")
 dataframe
 ```
@@ -127,17 +129,33 @@ Convertimos la rupia del Precio del producto a dolares estadounidenses
 dataMuestra$PrecioUSD<-dataMuestra$PrecioUSD*0.012
 dataMuestra$PrecioUSD[1:10]
 ```
+
+
 La moda de los productos.
 ```{r}
 getmode <- function(mod) {
    uniqv <- unique(mod)
    uniqv[which.max(tabulate(match(mod, uniqv)))]
 }
-
-mod <- dataMuestra$NombreProducto
-
-result <- getmode(mod)
+modNombreProducto <- dataMuestra$NombreProducto
+result <- getmode(modNombreProducto)
 print(result)
+```
+
+```{r}
+tablaNombreProducto<-table(modNombreProducto)
+
+maxNombreProducto<-max(tablaNombreProducto)
+# Convertir la tabla en un dataframe
+tabla_df <- as.data.frame(tablaNombreProducto)
+# Acceder al conteo
+conteo <- tabla_df$Freq
+# Definir el valor umbral para cambiar el color de la barra
+ggplot(tabla_df,aes(x=tabla_df$modNombreProducto,y=tabla_df$Freq)) +
+  geom_bar(stat = "identity", fill = ifelse(conteo == maxNombreProducto, "green", "blue")) +
+  labs(x = "Nombre Producto", y = "Cant. Apariciones") +
+  ggtitle("Gráfico de barras - NombreProducto") +
+  theme_minimal()
 ```
 
 La moda de la marca del producto
@@ -153,18 +171,48 @@ result <- getmode(mod)
 print(result)
 ```
 
+```{r}
+tablaMarca<-table(dataMuestra$MarcaProducto)
+  
+maxMarca<-max(table(dataMuestra$MarcaProducto))
+# Convertir la tabla en un dataframe
+tabla_df <- as.data.frame(tablaMarca)
+# Acceder al conteo
+conteo <- tabla_df$Freq
+
+# Definir el valor umbral para cambiar el color de la barra
+ggplot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq)) +
+  geom_bar(stat = "identity", fill = ifelse(conteo == maxMarca, "green", "blue")) +
+  labs(x = "Marca Producto", y = "Cant. Apariciones") +
+  ggtitle("Gráfico de barras - MarcaProducto") +
+  theme_minimal()
+```
+
+
 La moda del género
 ```{r}
-getmode <- function(mod) {
-   uniqv <- unique(mod)
-   uniqv[which.max(tabulate(match(mod, uniqv)))]
-}
-
-mod <- dataMuestra$Genero
-
-result <- getmode(mod)
+result <- mlv(dataMuestra$Genero,method="mfv")
 print(result)
 ```
+
+
+```{r}
+tablaGenero<-table(dataMuestra$Genero)
+maxGenero<-max(table(dataMuestra$Genero))
+# Convertir la tabla en un dataframe
+tabla_df <- as.data.frame(tablaGenero)
+# Acceder al conteo
+conteo <- tabla_df$Freq
+
+# Definir el valor umbral para cambiar el color de la barra
+ggplot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq)) +
+  geom_bar(stat = "identity", fill = ifelse(conteo == maxGenero, "green", "blue")) +
+  labs(x = "Genero", y = "Cant. Apariciones") +
+  ggtitle("Gráfico de barras-Genero") +
+  theme_minimal()
+
+```
+
 
 La media de precios de la empresa en USD
 ```{r}
@@ -186,16 +234,36 @@ getmode <- function(mod) {
 mod <- dataMuestra$PrecioUSD
 result <- getmode(mod)
 print(result)
-
 cantResult=max(table(mod))
-barplot(table(mod),col=ifelse(table(mod)==cantResult,"red","yellow"))
-
+print(cantResult)
 ```
+
+```{r}
+
+tablaPrecio<-table(dataMuestra$PrecioUSD)
+tabla_df <- as.data.frame(tablaPrecio)
+maxCantPrecio<-max(tablaPrecio)
+conteo<-tabla_df$Freq
+# Acceder al conteo
+plot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq),main="Rango de los precios",col="red")+
+geom_line(stat = "identity", fill = ifelse(conteo == maxCantPrecio, "green", "blue"))
+```
+
 El rango de los precios
 ```{r}
-range(dataMuestra$PrecioUSD)
-plot(dataMuestra$PrecioUSD,main="Rango de los precios",xlab="cantPrecios",ylab="Precios",col="red")
+rango<-range(dataMuestra$PrecioUSD)
+print("inicia en:")
+print(rango[1])
+print("termina en:")
+print(rango[2])
 ```
+
+
+
+```{r}
+hist(dataMuestra$PrecioUSD,col=c("red","blue","yellow","pink"),main="Histograma de precios",xlab="Precios en USD", ylab= "Cantidad")
+```
+
 El rango intercuartil de precios
 ```{r}
 Q1=quantile(dataMuestra$PrecioUSD,0.25)#Q1
@@ -237,6 +305,8 @@ print(result)
 
 boxplot(dataMuestra$NumImagenes,horizontal = T,col="skyblue",main="Numero de Img")
 ```
+
+
 Identificar el producto más caro
 ```{r}
 max(dataMuestra$PrecioUSD)
@@ -244,6 +314,8 @@ productoCaro<-dataMuestra%>%
   filter(dataMuestra$PrecioUSD==max(dataMuestra$PrecioUSD))
 productoCaro
 ```
+
+
 Identificar los colores más repetidos que llevan el aumento de precio
 ```{r}
 Modcolor<-getmode(dataMuestra$ColorPrimario)
@@ -303,20 +375,6 @@ if (TotalDamas>TotalVarones){
   print(TotalVarones-TotalDamas)
 }
 ```
-
-Comparativa de la cantidad de ropa en base al género
-
-```{r}
-table(dataMuestra$Genero, useNA = "always")
-
-frec_gen<- c(63, 43, 373, 148, 373)
-frec_gen
-
-pie3D(frec_gen, labels=frec_gen, col= c("lightyellow", "lightblue","pink","orange", "green"))
-legend("bottomleft", legend = c("Boys", "Girls", "Men", "Unisex", "Women"),
-       fill =  c("lightyellow", "lightblue", "pink","orange", "green"))
-```
-
 
 
 El rango de los precios según el genero de la ropa
