@@ -50,6 +50,7 @@ A partir de esta información, se desarrollará un modelo de recomendación que 
 
 + Identificar los productos más caros
 + Identificar los colores más repetidos que llevan el aumento de precio
++ Identificar que productos que prefiere la población, su precio, color y para que géneros
 + Analizar qué productos en el mercado de la India son más caros y para qué género
 + Identificar los colores preferidos de la población con relación a su género
 
@@ -97,16 +98,20 @@ Para la base de datos presentamos las siguientes variables:
 |**ColorPrimario**|***cualitativa***|Color del producto|
 
 Actualizamos el nombre de nuestras columnas para una mejor visualización de nuestro estudio
+
 ```{r}
 colnames(dataMuestra)
 colnames(dataMuestra)<-c("ProductoId","NombreProducto","MarcaProducto","Genero","PrecioUSD","NumImagenes","Descripción","ColorPrimario")
 ```
+
 Ahora nuestras columnas se llamaran
+
 ```{r}
 colnames(dataMuestra)
 ```
 
 Control de los Na en las variables
+
 ```{r}
 any(is.na(dataMuestra$ProductoId))
 any(is.na(dataMuestra$NombreProducto))
@@ -119,12 +124,14 @@ any(is.na(dataMuestra$ColorPrimario))
 ```
 
 Detectamos que color primario cuenta con valores Na entonces procedemos a corregirlo
+
 ```{r}
 dataMuestra$ColorPrimario[is.na(dataMuestra$ColorPrimario)]<-"No color"
 any(is.na(dataMuestra$ColorPrimario))
 ```
 
 Convertimos la rupia del Precio del producto a dolares estadounidenses
+
 ```{r}
 dataMuestra$PrecioUSD<-dataMuestra$PrecioUSD*0.012
 dataMuestra$PrecioUSD[1:10]
@@ -140,12 +147,16 @@ getmode <- function(mod) {
 modNombreProducto <- dataMuestra$NombreProducto
 result <- getmode(modNombreProducto)
 print(result)
+
+#OTRA FORMA
+mfv(dataMuestra$NombreProducto,method="mlv")
 ```
 
 ```{r}
 tablaNombreProducto<-table(modNombreProducto)
 
 maxNombreProducto<-max(tablaNombreProducto)
+print(maxNombreProducto)
 # Convertir la tabla en un dataframe
 tabla_df <- as.data.frame(tablaNombreProducto)
 # Acceder al conteo
@@ -156,7 +167,24 @@ ggplot(tabla_df,aes(x=tabla_df$modNombreProducto,y=tabla_df$Freq)) +
   labs(x = "Nombre Producto", y = "Cant. Apariciones") +
   ggtitle("Gráfico de barras - NombreProducto") +
   theme_minimal()
+
+ProductosPreferidos<-dataMuestra %>%
+  filter(dataMuestra$NombreProducto==result)
+
+precios<- as.data.frame(table(ProductosPreferidos$PrecioUSD))
+colores<-as.data.frame(table(ProductosPreferidos$ColorPrimario))
+sexos<-as.data.frame(table(ProductosPreferidos$Genero))
 ```
+
+> ## *EXPLICACION*
+
+Podemos observar en mediante este gráfico de barras que el nombre que más pedido en MYNTRA es "Parx Men Blue Slim Fit Checked Casual Shirt" con un total de 16 veces pedido. Además de que su rango de precios es entre:
+```{r}
+range(as.double(as.character(precios$Var1)))
+print(colores$Var1)
+print(sexos$Var1)
+```
+Podemos concluir que los hombres, que compran "Parx Men Blue Slim Fit Checked Casual Shirt" a un precio entre 8.148 y 11.268 les gusta el color azul.
 
 La moda de la marca del producto
 ```{r}
@@ -173,32 +201,48 @@ print(result)
 
 ```{r}
 tablaMarca<-table(dataMuestra$MarcaProducto)
-  
+
 maxMarca<-max(table(dataMuestra$MarcaProducto))
+print(maxMarca)
 # Convertir la tabla en un dataframe
 tabla_df <- as.data.frame(tablaMarca)
 # Acceder al conteo
 conteo <- tabla_df$Freq
-
 # Definir el valor umbral para cambiar el color de la barra
 ggplot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq)) +
   geom_bar(stat = "identity", fill = ifelse(conteo == maxMarca, "green", "blue")) +
   labs(x = "Marca Producto", y = "Cant. Apariciones") +
+  #ggline(promedioMarca ~range())
   ggtitle("Gráfico de barras - MarcaProducto") +
   theme_minimal()
-```
 
+MarcaPreferida<-dataMuestra%>%
+  filter(dataMuestra$MarcaProducto==result)
+precio<-as.data.frame(table(MarcaPreferida$PrecioUSD))
+color<-as.data.frame(table(MarcaPreferida$ColorPrimario))
+sexos<-as.data.frame(table(MarcaPreferida$Genero))
+```
+> ## *EXPLICACIÓN:*
+
+Podemos observar en mediante este gráfico de barras la marca "Parx" en MYNTRA es la preferida de los clientes siendo un total de 112 veces pedido
+```{r}
+range(as.double(as.character(precio$Var1)))
+print(color)
+print(sexos)
+```
+Podemos concluir que los hombres que prefieren la marca "Parx", compran sus productos a precios entre 4.188 y 11.748, a la mayoría de dicha población les gusta el azul, pero que tambien escogen una gran variedad de colores.
 
 La moda del género
 ```{r}
 result <- mlv(dataMuestra$Genero,method="mfv")
 print(result)
 ```
-
+Podemos observar que la variable "Genero" es bimodal, ya que posee como a "Men" y "Women" como resultado de su moda.
 
 ```{r}
 tablaGenero<-table(dataMuestra$Genero)
 maxGenero<-max(table(dataMuestra$Genero))
+
 # Convertir la tabla en un dataframe
 tabla_df <- as.data.frame(tablaGenero)
 # Acceder al conteo
@@ -210,20 +254,25 @@ ggplot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq)) +
   labs(x = "Genero", y = "Cant. Apariciones") +
   ggtitle("Gráfico de barras-Genero") +
   theme_minimal()
-
 ```
 
+> ## *EXPLICACIÓN:*
+
+Con este diagrama de barras se puede observar con mejor detenimiento como es que se distribuye la variable "Genero", también podemos observar que la menor variable de apariciones es "Girls".
+Por lo que podemos concluir que los productos en MYNTRA están más enfocados para "Men" y "Woman", además de que "Girls" no es tan demandado en temas de "ropa de moda".
 
 La media de precios de la empresa en USD
 ```{r}
 mean(dataMuestra$PrecioUSD)
 ```
+La variable "PrecioUSD" tiene un promedio de 20.80039, pero esta información no puede ser muy confiable ya que existen formas de dar falsa información.
 
 La mediana de precios de la empresa en USD
 ```{r}
 MedianaPrecio<-median(dataMuestra$PrecioUSD)
-MedianaPrecio
+print(MedianaPrecio)
 ```
+Podemos observar que la tendencia central en la variable "PrecioUSD" es de 10.788 dolares.
 
 La moda de precios de la empresa en USD
 ```{r}
@@ -237,17 +286,21 @@ print(result)
 cantResult=max(table(mod))
 print(cantResult)
 ```
+Podemos observar que el precio 8.388 en la variable "PrecioUSD" es el que más se repite, siendo un total de 63 veces.
 
 ```{r}
-
 tablaPrecio<-table(dataMuestra$PrecioUSD)
 tabla_df <- as.data.frame(tablaPrecio)
 maxCantPrecio<-max(tablaPrecio)
 conteo<-tabla_df$Freq
 # Acceder al conteo
-plot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq),main="Rango de los precios",col="red")+
+plot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq),main="Rango de los precios",col="red",xlab="PreciosUSD",ylab="Cant. Apariciones")+
 geom_line(stat = "identity", fill = ifelse(conteo == maxCantPrecio, "green", "blue"))
 ```
+
+> ## *EXPLICACION:*
+
+Podemos observar de mejor manera como se distribuyen los precios respecto a sus apariciones, notando de que la cantidad de más apariciones es del precio 8.38 con un total de 63 veces además de que los precios menos 25 dolares son la preferencia de los clientes.
 
 El rango de los precios
 ```{r}
@@ -257,12 +310,17 @@ print(rango[1])
 print("termina en:")
 print(rango[2])
 ```
-
+Los valores en la variable "PrecioUSD" están en un rango entre 3.108 y 373.2.  
 
 
 ```{r}
 hist(dataMuestra$PrecioUSD,col=c("red","blue","yellow","pink"),main="Histograma de precios",xlab="Precios en USD", ylab= "Cantidad")
 ```
+
+> ## *EXPLICACIÓN:*
+
+Se puede observar de mejor manera como la mayor cantidad de apariciones en los precios son inferiores a los 50 dolares aproximadamente, y que los precios con menos apariciones son mayores a 100 dolares proximadamente.
+Concluyendo que los clienetes prefieren los productos más baratos a 50 dolares.
 
 El rango intercuartil de precios
 ```{r}
@@ -274,10 +332,18 @@ IQR(dataMuestra$PrecioUSD)
 boxplot(dataMuestra$PrecioUSD,col=c('yellow'),horizontal = T,main="Rango de precios USD")
 ```
 
+> ## *EXPLICACIÓN:*
+
+En esta boxplot podemos observar que es sesgado a la derecha con valores menores a 50 dolares, con n datos atípicos y que su su mediana está alrededor de los 25 dolares aproximadamente.
+Podemos concluir que la parte más corta es inferior a la mediana, y la media es mayor a la mediana.
+
 La desviacion estandar
 ```{r}
 sd(dataMuestra$PrecioUSD)#cuanto se dispersa el precio con respecto al promedio
 ```
+
+
+
 La varianza del precio
 ```{r}
 var(dataMuestra$PrecioUSD)
@@ -299,13 +365,30 @@ getmode <- function(mod) {
 }
 
 mod <- dataMuestra$NumImagenes
-
 result <- getmode(mod)
 print(result)
 
 boxplot(dataMuestra$NumImagenes,horizontal = T,col="skyblue",main="Numero de Img")
+print("Promedio:")
+mean(dataMuestra$NumImagenes)
+print("Mediana:")
+median(dataMuestra$NumImagenes)
+
+
 ```
 
+> ## *EXPLICACIÓN:*
+
+Podeos observar que tambien presenta datos atípicos, pero algo curioso pasa en este boxplot, podemos ver que la mediana, media y la moda es aproximadamente 5, es decir podemos concluir que la distribución es simétrica.
+
+```{r}
+tablaImagenes<-table(mod)
+barplot(tablaImagenes,col=c('red','blue','pink','yellow','brown','skyblue','lightgreen'),main="Diagra de barras de Num. Imagenes")
+```
+> ## *EXPLICACIÓN:*
+
+De una mejor manera podemos observar como es que las cantidades de los precios es que se encuentran. 
+Con ello podemos concluir que las empresas con mayor éxito solo necesitan 5 imágenes para captar la atención del cliente.
 
 Identificar el producto más caro
 ```{r}
@@ -314,19 +397,32 @@ productoCaro<-dataMuestra%>%
   filter(dataMuestra$PrecioUSD==max(dataMuestra$PrecioUSD))
 productoCaro
 ```
-
-
+El producto más caro es de la marca "DKNY" para los generos de "Unisex" con un precio de 373.2 dolares.
+ 
 Identificar los colores más repetidos que llevan el aumento de precio
 ```{r}
+
 Modcolor<-getmode(dataMuestra$ColorPrimario)
+print(Modcolor)
 preguntaColor<-dataMuestra %>%
   filter(dataMuestra$ColorPrimario==Modcolor)
 ModPrecioColor<-getmode(preguntaColor$PrecioUSD)
-ModPrecioColor
+print(ModPrecioColor)
 cantResultColor<-max(table(preguntaColor$PrecioUSD))
-x <- c(1, 5, 1, 6, 2, 1, 6, 7, 1,8,9,10,11,12,13)
-barplot(table(preguntaColor$PrecioUSD), col= ifelse(table(preguntaColor$PrecioUSD)==cantResultColor,"red","green"))
+
+barplot(table(preguntaColor$PrecioUSD), col= ifelse(table(preguntaColor$PrecioUSD)==cantResultColor,"red","green"), main="Diagrama de barras de los precios para los colores preferidos")
+
+range(preguntaColor$PrecioUSD)
+MasCaro<-preguntaColor%>%
+  filter(preguntaColor$PrecioUSD==max(preguntaColor$PrecioUSD))
+print(MasCaro)
 ```
+
+> ## *EXPLICACIÓN:* 
+
+Podemos observar que el color azul es el más preferido de las empresas, también que su precio más repetido es de 8.388, y se encuentra en un rango de 67.188, además de que observamos de que el producto más caro  con un precio de 67.188, que es destinado a los hombre, es para la marca Raymond.
+
+Con lo que podemos concluir que al alza de precio para los colores más caros, depende de la "Marca" y para el "Cliente".
 
 Cuales son los precios más caros para los Varones
 ```{r}
@@ -348,7 +444,9 @@ TotalVarones=MaxBoys+MaxMens
 print('Precio total:')
 print(TotalVarones)
 ```
+
 Cuales son los precios más caros para las Damas
+
 ```{r}
 table(dataMuestra$Genero) 
 preguntaGirls<- dataMuestra %>%
@@ -400,6 +498,8 @@ ggplot(data = dataHombres, aes(x = dataHombres$MarcaProducto, fill = dataHombres
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90)) 
 ```
+
+mosaico!!
 
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
