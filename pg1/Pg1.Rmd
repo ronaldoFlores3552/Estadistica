@@ -500,7 +500,7 @@ ggplot(data = dataHombres, aes(x = dataHombres$MarcaProducto, fill = dataHombres
 ```
 
 mosaico!!
-
+Ronaldinho.
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
 [BaseDatos]: https://www.kaggle.com/datasets/shivamb/fashion-clothing-products-catalog
