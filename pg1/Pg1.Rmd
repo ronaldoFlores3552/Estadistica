@@ -216,7 +216,8 @@ ggplot(tabla_df,aes(x=tabla_df$Var1,y=tabla_df$Freq)) +
   labs(x = "Marca Producto", y = "Cant. Apariciones") +
   #ggline(promedioMarca ~range())
   ggtitle("Gráfico de barras - MarcaProducto") +
-  theme_minimal()
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90)) 
 
 MarcaPreferida<-dataMuestra%>%
   filter(dataMuestra$MarcaProducto==result)
@@ -304,6 +305,8 @@ geom_line(stat = "identity", fill = ifelse(conteo == maxCantPrecio, "green", "bl
 > ## *EXPLICACION:*
 
 Podemos observar de mejor manera como se distribuyen los precios respecto a sus apariciones, notando de que la cantidad de más apariciones es del precio 8.38 con un total de 63 veces además de que los precios menos 25 dolares son la preferencia de los clientes ya que tienen una mayor cantidad de apariciones.
+
+
 
 El rango de los precios
 ```{r}
@@ -393,7 +396,7 @@ barplot(tablaImagenes,col=c('red','blue','pink','yellow','brown','skyblue','ligh
 De una mejor manera podemos observar como es que las cantidades de los precios es que se encuentran. 
 Con ello podemos concluir que las empresas con mayor éxito solo necesitan 5 imágenes para captar la atención del cliente.
 
-Identificar el producto más caro
+**Identificar el producto más caro: **
 ```{r}
 max(dataMuestra$PrecioUSD)
 productoCaro<-dataMuestra%>%
@@ -402,10 +405,11 @@ productoCaro
 unique(productoCaro$MarcaProducto)
 unique(productoCaro$Genero)
 unique(productoCaro$ColorPrimario)
+unique(productoCaro$NombreProducto)
 ```
-El producto más caro es de la marca "DKNY" para los generos de "Unisex" con un precio de 373.2 dolares con los colores Purple y Black.
- 
-Identificar los colores más repetidos que llevan el aumento de precio
+Los productos más caros es  "DKNY Unisex Purple Large Trolley Bag" y "DKNY Unisex Black & Grey Printed Large Trolley Bag" de la marca "DKNY" para los generos de "Unisex" con un precio de 373.2 dolares en ambos casos, con los colores Purple y Black respectivamente.
+
+**Identificar los colores más repetidos que llevan el aumento de precio**
 ```{r}
 
 Modcolor<-getmode(dataMuestra$ColorPrimario)
@@ -430,7 +434,10 @@ Podemos observar que el color azul es el más preferido de las empresas, tambié
 
 Con lo que podemos concluir que al alza de precio para los colores más caros, depende de la "Marca" y para el género "Cliente".
 
-Cuales son los precios más caros para los Varones
+**Analizar qué productos en el mercado de la India son más caros y para qué género:**
+Para este analizis no tomaremos en cuenta el género "Unisex" porque entraría en nuestros 2 puntos, que hablaremos a continuacion, y luego los restaremos
+
+*Cuales son los precios más caros para los Varones*
 ```{r}
 table(dataMuestra$Genero) 
 preguntaBoys<- dataMuestra %>%
@@ -458,7 +465,7 @@ print(TotalVarones)
 Podemos observar que los clientes más frecuentes son los Mens que los Boys, como se dijo en la moda de "Genero", pero tambien podemos obervar que los precios al menos uno de los más caros se encuentran en los Mens, con un valor de 79.788 dolares.
 Dándonos un total de los maximos precios para Mens y Boys con un precio de 100.176 dolares.
 
-Cuales son los precios más caros para las Damas
+*Cuales son los precios más caros para las Damas*
 
 ```{r}
 table(dataMuestra$Genero) 
@@ -500,7 +507,7 @@ if (TotalDamas>TotalVarones){
 
 Podemos concluir que las damas han comprado los productos más caros y que son de la marca "ahilya", llamado "ahilya Gold-Plated Sterling Silver Jhumka Earrings" y que es de color "Gold". 
 
-El rango de los precios según el genero de la ropa
+*El rango de los precios según el genero de la ropa*
 ```{r}
 ggplot(data = dataMuestra, aes(x = dataMuestra$Genero, y = dataMuestra$PrecioUSD, fill = dataMuestra$Genero)) +
   geom_boxplot() +
@@ -524,7 +531,6 @@ ggplot(data = dataHombres, aes(x = dataHombres$MarcaProducto, fill = dataHombres
   theme(axis.text.x = element_text(angle = 90)) 
 ```
 
-Identificar los colores preferidos de la población con relación a su género.
 
 [link1]:https://cita.utec.edu.pe/assets/uploads/2019/05/logo_utec.png {width='400px'}
 [BaseDatos]: https://www.kaggle.com/datasets/shivamb/fashion-clothing-products-catalog
